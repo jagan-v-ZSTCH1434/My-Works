@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Snake Game</title>
+  <link rel="stylesheet" href="snake.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Particle Background -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Main Container -->
+  <div class="game-wrapper">
+
+    <!-- Header -->
+    <header class="game-header">
+      <div class="logo">
+        <span class="logo-icon">🐍</span>
+        <span class="logo-text">SNAKE <span class="logo-accent">3D</span></span>
+      </div>
+      <div class="header-stats">
+        <div class="stat-box">
+          <span class="stat-label">SCORE</span>
+          <span class="stat-value" id="score">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">BEST</span>
+          <span class="stat-value" id="highScore">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">LEVEL</span>
+          <span class="stat-value" id="level">1</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">SPEED</span>
+          <span class="stat-value" id="speedLabel">1x</span>
+        </div>
+      </div>
+      <button class="btn-settings" id="settingsBtn" title="Settings">⚙️</button>
+    </header>
+
+    <!-- Arena -->
+    <div class="arena-wrapper">
+      <div class="arena-scene" id="arenaScene">
+
+        <!-- 3D Floor Grid -->
+        <div class="arena-floor">
+          <div class="floor-grid" id="floorGrid"></div>
+        </div>
+
+        <!-- Game Canvas -->
+        <canvas id="gameCanvas" width="480" height="480"></canvas>
+
+        <!-- Overlay Screens -->
+        <div class="overlay" id="startScreen">
+          <div class="overlay-card">
+            <div class="overlay-icon pulse-glow">🐍</div>
+            <h2 class="overlay-title">SNAKE <span class="text-neon">3D</span></h2>
+            <p class="overlay-sub">Navigate the neon grid, eat to grow, don't bite yourself!</p>
+            <div class="key-hints">
+              <div class="key-hint"><kbd>↑ ↓ ← →</kbd> Move</div>
+              <div class="key-hint"><kbd>W A S D</kbd> Move</div>
+              <div class="key-hint"><kbd>P</kbd> Pause</div>
+            </div>
+            <button class="btn-start" id="startBtn">START GAME</button>
+          </div>
+        </div>
+
+        <div class="overlay" id="pauseScreen" style="display:none">
+          <div class="overlay-card">
+            <div class="overlay-icon">⏸</div>
+            <h2 class="overlay-title">PAUSED</h2>
+            <p class="overlay-sub">Game is paused</p>
+            <button class="btn-start" id="resumeBtn">RESUME</button>
+          </div>
+        </div>
+
+        <div class="overlay" id="gameOverScreen" style="display:none">
+          <div class="overlay-card">
+            <div class="overlay-icon shake">💀</div>
+            <h2 class="overlay-title text-danger">GAME OVER</h2>
+            <div class="final-stats">
+              <div class="final-stat">
+                <span>Score</span>
+                <strong id="finalScore">0</strong>
+              </div>
+              <div class="final-stat">
+                <span>Length</span>
+                <strong id="finalLength">0</strong>
+              </div>
+              <div class="final-stat">
+                <span>Level</span>
+                <strong id="finalLevel">0</strong>
+              </div>
+            </div>
+            <div id="newHighMsg" class="new-high" style="display:none">🏆 NEW HIGH SCORE!</div>
+            <button class="btn-start" id="restartBtn">PLAY AGAIN</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Side Panel -->
+      <div class="side-panel">
+        <div class="panel-section">
+          <h3 class="panel-title">CONTROLS</h3>
+          <div class="control-grid">
+            <div></div>
+            <div class="ctrl-key" id="ctrlUp">▲</div>
+            <div></div>
+            <div class="ctrl-key" id="ctrlLeft">◀</div>
+            <div class="ctrl-key" id="ctrlDown">▼</div>
+            <div class="ctrl-key" id="ctrlRight">▶</div>
+          </div>
+          <button class="btn-panel" id="pauseBtn">⏸ Pause</button>
+        </div>
+
+        <div class="panel-section">
+          <h3 class="panel-title">STREAK</h3>
+          <div class="streak-bar" id="streakBar">
+            <div class="streak-fill" id="streakFill"></div>
+          </div>
+          <p class="streak-label">Combo: <span id="comboCount">0</span>x</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="game-footer">
+      <p>Use <kbd>Arrow Keys</kbd> or <kbd>WASD</kbd> to move &nbsp;|&nbsp; <kbd>P</kbd> to Pause &nbsp;|&nbsp;Made by Asta</p>
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Settings Modal -->
+  <div class="settings-backdrop" id="settingsBackdrop">
+    <div class="settings-modal" id="settingsModal">
+      <div class="settings-header">
+        <h2 class="settings-title">⚙️ SETTINGS</h2>
+        <button class="settings-close" id="settingsClose">✕</button>
+      </div>
+
+      <!-- Sound -->
+      <div class="settings-section">
+        <h3 class="settings-section-title">🔊 Sound</h3>
+        <div class="settings-row">
+          <span class="settings-label">Sound Effects</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="soundToggle" checked />
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+            </span>
+          </label>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Volume</span>
+          <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70" />
+          <span class="settings-value" id="volumeVal">70%</span>
+        </div>
+      </div>
+
+      <!-- Snake Color -->
+      <div class="settings-section">
+        <h3 class="settings-section-title">🎨 Snake Color</h3>
+        <div class="color-grid" id="colorGrid">
+          <button class="color-swatch active" data-theme="neon" title="Neon Green">
+            <span class="swatch-preview" style="background:linear-gradient(135deg,#00ff88,#00cfff)"></span>
+            <span>Neon</span>
+          </button>
+          <button class="color-swatch" data-theme="cyan" title="Cyan">
+            <span class="swatch-preview" style="background:linear-gradient(135deg,#00cfff,#0055ff)"></span>
+            <span>Cyan</span>
+          </button>
+          <button class="color-swatch" data-theme="purple" title="Purple">
+            <span class="swatch-preview" style="background:linear-gradient(135deg,#bf7fff,#7c3aed)"></span>
+            <span>Purple</span>
+          </button>
+          <button class="color-swatch" data-theme="orange" title="Orange">
+            <span class="swatch-preview" style="background:linear-gradient(135deg,#ffdd00,#ff7700)"></span>
+            <span>Orange</span>
+          </button>
+          <button class="color-swatch" data-theme="red" title="Red">
+            <span class="swatch-preview" style="background:linear-gradient(135deg,#ff6688,#cc0022)"></span>
+            <span>Red</span>
+          </button>
+          <button class="color-swatch" data-theme="pink" title="Pink">
+            <span class="swatch-preview" style="background:linear-gradient(135deg,#ff88cc,#ee00aa)"></span>
+            <span>Pink</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="settings-section">
+        <h3 class="settings-section-title">👀 Preview</h3>
+        <canvas id="previewCanvas" width="200" height="60" class="preview-canvas"></canvas>
+      </div>
+
+      <button class="btn-start btn-save" id="saveSettings">SAVE &amp; CLOSE</button>
+    </div>
+  </div>
+
+  <script src="snake.js"></script>
+</body>
+</html>
