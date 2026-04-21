@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Anime Hero Opening Page</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--bg-0: #030612;
+			--bg-1: #060d26;
+			--bg-2: #0a153a;
+			--ink: #f4f6ff;
+			--muted: #a4add4;
+			--neon: #7f7cff;
+			--neon-2: #4f6dff;
+			--line: rgba(125, 134, 255, 0.3);
+			--panel: rgba(10, 16, 43, 0.72);
+			--glow: 0 0 30px rgba(127, 124, 255, 0.35);
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			color: var(--ink);
+			font-family: "Montserrat", sans-serif;
+			background:
+				radial-gradient(circle at 10% 20%, rgba(127, 124, 255, 0.2), transparent 35%),
+				radial-gradient(circle at 85% 12%, rgba(79, 109, 255, 0.2), transparent 32%),
+				linear-gradient(135deg, var(--bg-0), var(--bg-1) 45%, var(--bg-2));
+			overflow-x: hidden;
+		}
+
+		body::before {
+			content: "";
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			background-image:
+				linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+			background-size: 64px 64px;
+			opacity: 0.35;
+			mask-image: radial-gradient(circle at center, black 40%, transparent 92%);
+		}
+
+		.page {
+			width: min(1280px, calc(100% - 2rem));
+			margin: 0 auto;
+			padding: 1rem 0 1.5rem;
+			position: relative;
+		}
+
+		.topbar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 1rem;
+			padding: 0.65rem 0 1.2rem;
+		}
+
+		.logo {
+			font-family: "Orbitron", sans-serif;
+			letter-spacing: 0.09em;
+			font-weight: 700;
+			color: #c8caff;
+		}
+
+		.nav {
+			display: inline-flex;
+			gap: 1.6rem;
+			font-size: 0.78rem;
+			letter-spacing: 0.11em;
+			text-transform: uppercase;
+		}
+
+		.nav a {
+			color: #bec5ee;
+			text-decoration: none;
+			position: relative;
+		}
+
+		.nav a.active,
+		.nav a:hover {
+			color: #f4f6ff;
+		}
+
+		.nav a.active::after,
+		.nav a:hover::after {
+			content: "";
+			position: absolute;
+			left: 0;
+			bottom: -0.45rem;
+			width: 100%;
+			height: 2px;
+			background: linear-gradient(90deg, var(--neon), #c1c6ff);
+		}
+
+		.hero {
+			display: grid;
+			grid-template-columns: minmax(320px, 45%) minmax(320px, 55%);
+			min-height: 82vh;
+			border: 1px solid var(--line);
+			border-radius: 22px;
+			overflow: hidden;
+			background: linear-gradient(120deg, rgba(10, 15, 34, 0.65), rgba(5, 9, 25, 0.55));
+			box-shadow: var(--glow);
+		}
+
+		.left {
+			position: relative;
+			background:
+				radial-gradient(circle at 35% 25%, rgba(129, 122, 255, 0.27), transparent 40%),
+				radial-gradient(circle at 30% 75%, rgba(95, 118, 255, 0.3), transparent 45%);
+			border-right: 1px solid var(--line);
+			overflow: hidden;
+		}
+
+		.energy {
+			position: absolute;
+			inset: 0;
+			background:
+				radial-gradient(circle at 20% 90%, rgba(118, 109, 255, 0.55), transparent 33%),
+				radial-gradient(circle at 15% 55%, rgba(108, 136, 255, 0.35), transparent 28%);
+			filter: blur(1px);
+			animation: wave 6s ease-in-out infinite alternate;
+		}
+
+		.character-wrap {
+			position: absolute;
+			inset: 0;
+			display: grid;
+			place-items: end center;
+			padding: 1rem;
+		}
+
+		.character {
+			width: min(100%, 570px);
+			max-height: 96%;
+			object-fit: contain;
+			filter: drop-shadow(0 14px 36px rgba(39, 51, 150, 0.6));
+			user-select: none;
+		}
+
+		.img-fallback {
+			width: min(88%, 470px);
+			aspect-ratio: 3 / 4;
+			border-radius: 22px;
+			border: 1px dashed rgba(201, 207, 255, 0.32);
+			background: linear-gradient(165deg, rgba(126, 129, 255, 0.2), rgba(58, 72, 148, 0.14));
+			display: none;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			color: #dde1ff;
+			font-weight: 600;
+			padding: 1rem;
+		}
+
+		.side-label {
+			position: absolute;
+			left: 0.45rem;
+			top: 5rem;
+			writing-mode: vertical-rl;
+			text-orientation: mixed;
+			letter-spacing: 0.22em;
+			color: rgba(203, 208, 255, 0.72);
+			font-size: 0.74rem;
+			text-transform: uppercase;
+			z-index: 2;
+		}
+
+		.social {
+			position: absolute;
+			left: 0.8rem;
+			bottom: 1rem;
+			display: grid;
+			gap: 0.85rem;
+			z-index: 2;
+		}
+
+		.social a {
+			color: #cdd2ff;
+			text-decoration: none;
+			font-size: 0.84rem;
+			border: 1px solid rgba(160, 171, 255, 0.28);
+			width: 1.9rem;
+			height: 1.9rem;
+			display: grid;
+			place-items: center;
+			border-radius: 8px;
+			background: rgba(10, 16, 43, 0.5);
+		}
+
+		.right {
+			padding: 1.5rem 2rem 1.3rem;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			gap: 1rem;
+			position: relative;
+		}
+
+		.intro {
+			color: #8f98d6;
+			letter-spacing: 0.23em;
+			text-transform: uppercase;
+			font-weight: 700;
+			margin: 0;
+		}
+
+		.name {
+			margin: 0;
+			font-size: clamp(2.8rem, 7vw, 6.2rem);
+			line-height: 0.95;
+			font-weight: 800;
+			letter-spacing: 0.02em;
+			text-transform: uppercase;
+			text-shadow: 0 0 30px rgba(127, 124, 255, 0.22);
+		}
+
+		.name .accent {
+			color: #cfd4ff;
+			background: linear-gradient(180deg, #f8f9ff, #a6afff);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+		}
+
+		.subtitle {
+			margin: 0;
+			color: #bac0ea;
+			letter-spacing: 0.6em;
+			font-size: 0.8rem;
+			text-transform: uppercase;
+			border-bottom: 1px solid rgba(133, 145, 236, 0.38);
+			width: fit-content;
+			padding-bottom: 0.65rem;
+		}
+
+		.quote {
+			margin: 0.6rem 0 0;
+			color: #d4d8f5;
+			font-size: clamp(1rem, 2vw, 1.45rem);
+			line-height: 1.5;
+			max-width: 42ch;
+			position: relative;
+			padding-left: 1.1rem;
+		}
+
+		.quote::before,
+		.quote::after {
+			color: #7f7cff;
+			font-size: 2rem;
+			position: absolute;
+			line-height: 1;
+		}
+
+		.quote::before {
+			content: "\201C";
+			left: 0;
+			top: -0.25rem;
+		}
+
+		.quote::after {
+			content: "\201D";
+			margin-left: 0.35rem;
+		}
+
+		.about {
+			margin-top: 0.55rem;
+			max-width: 52ch;
+			border-left: 2px solid rgba(130, 141, 255, 0.45);
+			padding-left: 1rem;
+		}
+
+		.about h3 {
+			margin: 0;
+			text-transform: uppercase;
+			color: #8692ff;
+			letter-spacing: 0.12em;
+			font-size: 0.92rem;
+		}
+
+		.about p {
+			margin: 0.62rem 0 0;
+			color: var(--muted);
+			line-height: 1.7;
+			font-size: 0.94rem;
+		}
+
+		.skills {
+			display: grid;
+			grid-template-columns: repeat(4, minmax(120px, 1fr));
+			gap: 0.65rem;
+			margin-top: 0.7rem;
+		}
+
+		.skill {
+			border: 1px solid rgba(129, 138, 238, 0.42);
+			border-radius: 12px;
+			background: var(--panel);
+			min-height: 82px;
+			padding: 0.7rem 0.6rem;
+			display: grid;
+			place-items: center;
+			text-align: center;
+			color: #c7cef5;
+			font-size: 0.7rem;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			box-shadow: inset 0 0 22px rgba(120, 130, 255, 0.07);
+		}
+
+		.skill .icon {
+			font-size: 1.35rem;
+			color: #8f97ff;
+			margin-bottom: 0.35rem;
+		}
+
+		.cta {
+			margin-top: 0.55rem;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.75rem;
+			border: 1px solid rgba(130, 141, 255, 0.72);
+			border-radius: 10px;
+			padding: 0.9rem 1.15rem;
+			text-transform: uppercase;
+			letter-spacing: 0.15em;
+			font-size: 0.76rem;
+			font-weight: 700;
+			color: #d8ddff;
+			background: linear-gradient(130deg, rgba(36, 47, 121, 0.85), rgba(14, 20, 57, 0.7));
+			width: fit-content;
+			text-decoration: none;
+			transition: transform 0.25s ease, box-shadow 0.25s ease;
+		}
+
+		.cta:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 30px rgba(127, 124, 255, 0.3);
+		}
+
+		.signature {
+			position: absolute;
+			right: 1.2rem;
+			bottom: 0.8rem;
+			color: rgba(171, 181, 255, 0.7);
+			font-style: italic;
+			font-size: 1.5rem;
+			font-family: "Orbitron", sans-serif;
+		}
+
+		.reveal {
+			opacity: 0;
+			transform: translateY(18px);
+			transition: opacity 0.75s ease, transform 0.75s ease;
+		}
+
+		.reveal.show {
+			opacity: 1;
+			transform: none;
+		}
+
+		@keyframes wave {
+			0% {
+				transform: translateX(0) scale(1);
+			}
+			100% {
+				transform: translateX(6px) scale(1.02);
+			}
+		}
+
+		@media (max-width: 1100px) {
+			.hero {
+				grid-template-columns: 1fr;
+			}
+
+			.left {
+				min-height: 62vh;
+				border-right: none;
+				border-bottom: 1px solid var(--line);
+			}
+
+			.right {
+				padding: 1.4rem 1.2rem 1.2rem;
+			}
+
+			.skills {
+				grid-template-columns: repeat(2, minmax(120px, 1fr));
+			}
+
+			.signature {
+				position: static;
+				margin-top: 0.2rem;
+			}
+		}
+
+		@media (max-width: 640px) {
+			.page {
+				width: min(100% - 1rem, 1280px);
+			}
+
+			.topbar {
+				flex-direction: column;
+				align-items: flex-start;
+				padding-bottom: 0.8rem;
+			}
+
+			.nav {
+				gap: 1rem;
+				flex-wrap: wrap;
+			}
+
+			.left {
+				min-height: 52vh;
+			}
+
+			.name {
+				font-size: clamp(2.3rem, 14vw, 4rem);
+			}
+
+			.subtitle {
+				letter-spacing: 0.28em;
+				font-size: 0.72rem;
+			}
+
+			.social {
+				left: 0.5rem;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="page">
+		<header class="topbar reveal">
+			<div class="logo">SG</div>
+			<nav class="nav">
+				<a href="#" class="active">Home</a>
+				<a href="#">About</a>
+				<a href="#">Skills</a>
+				<a href="#">Projects</a>
+				<a href="#">Contact</a>
+			</nav>
+		</header>
+
+		<section class="hero">
+			<div class="left reveal">
+				<div class="energy"></div>
+				<div class="side-label">Gojo Satoru</div>
+
+				<div class="character-wrap">
+					<img class="character" id="heroImage" src="gojo.png" alt="Anime character portrait">
+					<div class="img-fallback" id="fallbackBox">Add your character image as gojo.png in this folder</div>
+				</div>
+
+				<div class="social">
+					<a href="#" aria-label="Twitter">T</a>
+					<a href="#" aria-label="Instagram">I</a>
+					<a href="#" aria-label="Behance">B</a>
+				</div>
+			</div>
+
+			<div class="right reveal">
+				<p class="intro">Hello, I am</p>
+				<h1 class="name"><span class="accent">Satoru</span><br>Gojo</h1>
+				<p class="subtitle">The Honored One</p>
+
+				<p class="quote">Throughout heaven and earth, I alone am the honored one.</p>
+
+				<article class="about">
+					<h3>About Me</h3>
+					<p>
+						I am Satoru Gojo, a Special Grade Jujutsu Sorcerer and teacher at Tokyo Jujutsu High.
+						My goal is to build the next generation stronger, sharper, and fearless.
+					</p>
+				</article>
+
+				<div class="skills">
+					<div class="skill"><span class="icon">∞</span>Limitless</div>
+					<div class="skill"><span class="icon">◉</span>Six Eyes</div>
+					<div class="skill"><span class="icon">✶</span>Cursed Technique</div>
+					<div class="skill"><span class="icon">⚡</span>Domain Expansion</div>
+				</div>
+
+				<a href="#" class="cta">Explore My World <span>&rarr;</span></a>
+				<div class="signature">S.Gojo</div>
+			</div>
+		</section>
+	</div>
+
+	<script>
+		const image = document.getElementById("heroImage");
+		const fallbackBox = document.getElementById("fallbackBox");
+		const revealEls = document.querySelectorAll(".reveal");
+
+		function setupImageFallback() {
+			image.addEventListener("error", () => {
+				image.style.display = "none";
+				fallbackBox.style.display = "flex";
+			});
+
+			if (image.complete && image.naturalWidth === 0) {
+				image.style.display = "none";
+				fallbackBox.style.display = "flex";
+			}
+		}
+
+		function setupReveal() {
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add("show");
+						observer.unobserve(entry.target);
+					}
+				});
+			}, { threshold: 0.2 });
+
+			revealEls.forEach((el, index) => {
+				el.style.transitionDelay = `${index * 120}ms`;
+				observer.observe(el);
+			});
+		}
+
+		setupImageFallback();
+		setupReveal();
+	</script>
+</body>
+</html>
